@@ -1,0 +1,11 @@
+{
+  "name": "cloudtak-plugin-wmd",
+  "version": "0.1.0",
+  "description": "CloudTAK client plugin: compute WMD PLOTTER CBRN plumes in-browser and post hazard zones to a DataSync mission",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node lib/cot.test.mjs"
+  },
+  "comment": "No dependencies are declared here on purpose. CloudTAK plugins are cloned into api/web/plugins/<name>/ and bundled by CloudTAK's own Vite build, resolving vue, vue-router, pinia, maplibre-gl, @tabler/icons-vue, and @tak-ps/cloudtak from the CloudTAK app. This file exists only to mark the package as ESM and to run the off-cloud test. Verified against @tak-ps/cloudtak@13.70.0 (map.whitwerx.cloud) on 2026-08-21."
+}
