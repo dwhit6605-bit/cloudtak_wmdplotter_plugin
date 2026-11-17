@@ -48,13 +48,36 @@ Updating the plugin means rebuilding the image (no hot reload).
 
 ## The bundled models
 
-`models/*.js` are copied verbatim from WMD PLOTTER `frontend/js/models/` — the
-exact files cross-validated against the Python server (59 checks). If those
-change, re-copy them here. `models/data.js` carries the chemical / AEGL / ERG
-tables (generated from the Python source).
+`models/*.js` are generated from WMD PLOTTER `frontend/js/models/`, the files
+WMD PLOTTER cross-validates against its Python server:
+
+```bash
+node tools/sync-models.mjs ["../WMD PLOTTER"]     # regenerate
+node tools/sync-models.mjs --check                 # are they current?
+```
+
+Each is the WMD PLOTTER file unchanged, between a few generated lines that make
+it an ES module with a default export (and a `.d.ts` beside it).
+`lib/models.ts` imports them by name. Never edit them here: change WMD PLOTTER,
+run its tests, then sync. `models/data.js` carries the chemical, AEGL and ERG
+tables.
+
+The first version imported WMD PLOTTER's UMD files for their side effect and
+read a global, `self.WMDModels`. In a CloudTAK build the global was never set,
+and the panel threw "WMD models failed to load". A build that treats modules as
+free of side effects drops such imports; one that applies the CommonJS
+transform sends the files down their `module.exports` branch. Either is enough,
+and `lib/vite-bundle.test.mjs` reproduces both.
 
 ## Status & what's tested
 
+- **The models load as ES modules and through Vite** (`npm test`):
+  `lib/models.test.mjs` imports them with no globals, checks them against WMD
+  PLOTTER when it is alongside, and checks an elevated release reaches the
+  ground. `lib/vite-bundle.test.mjs` bundles `lib/models.ts` with Vite under
+  its defaults, with side-effect-free tree-shaking, and with the CommonJS
+  transform, then loads the bundle. It needs Vite: `VITE=/path/to/node_modules/vite`,
+  or it skips. Not yet verified inside a CloudTAK build.
 - **`lib/cot.js` — the compute→CoT core — is verified off-cloud: 19/19**
   (`npm test`). The test runs the real dispersion model on the bundled chemical
   data (exactly what the panel does) and checks the CoT features: u-d-f polygons,

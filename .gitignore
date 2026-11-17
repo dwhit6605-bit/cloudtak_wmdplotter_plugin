@@ -2,3 +2,6 @@ node_modules/
 dist/
 *.tsbuildinfo
 .DS_Store
+
+# macOS AppleDouble files from the exFAT working drive
+._*
